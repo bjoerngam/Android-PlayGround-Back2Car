@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "632527898307",
+    "firebase_url": "https://back2car-22fb2.firebaseio.com",
+    "project_id": "back2car-22fb2",
+    "storage_bucket": "back2car-22fb2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632527898307:android:d3c5c3a0bea6d5c5",
+        "android_client_info": {
+          "package_name": "com.example.android.back2car"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "632527898307-ao6c794eq9aea0cdg80podnucd63ohb2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAowk2RiXV66M5aX9e5OOAljit_qsSPPgo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
