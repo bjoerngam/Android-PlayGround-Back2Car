@@ -2,7 +2,9 @@ package com.example.android.back2car;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -24,13 +26,23 @@ public class MainActivity extends Activity {
 
     private Button mButton;
 
+    private SharedPreferences sharedpreferences;
+    private boolean isSharedPreferences = false;
+    private final String STORED_LATITUDE = "Latitude";
+    private final String STORED_LONGITUDE = "Longitude";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String APP_NAME = "Back2Car";
         checkSecurity();
+
+        sharedpreferences = getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+
         mButton = findViewById(R.id.btSetPosition);
         mButton.setElevation(16);
+
         mCurrentPosition = new CurrentPosition(this);
         mCurrentPosition.setLocationManager();
 
@@ -39,50 +51,47 @@ public class MainActivity extends Activity {
           @Override
           public boolean onDoubleTap(MotionEvent e) {
               if (!isClicked) {
-                  mButton.setBackground(getResources().getDrawable(R.drawable.circle_set));
-                  mBack2Car = new Back2Car(mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue());
-                  Snackbar.make(findViewById(android.R.id.content), Double.toString(mCurrentPosition.getLongitue()) + " " +
-                          Double.toString(mCurrentPosition.getmLatitude()), Snackbar.LENGTH_LONG).show();
-                  isClicked = true;
-
-                  return true;
+                  if (isSharedPreferences) {
+                      String latitude = sharedpreferences.getString(STORED_LATITUDE, null);
+                      String longitude = sharedpreferences.getString(STORED_LONGITUDE, null);
+                      Snackbar.make(findViewById(android.R.id.content), "Found settings", Snackbar.LENGTH_LONG).show();
+                      mButton.setBackground(getResources().getDrawable(R.drawable.circle_set));
+                      mBack2Car = new Back2Car(Double.valueOf(latitude), Double.valueOf(longitude));
+                      isClicked = true;
+                      return true;
+                  }else {
+                      mButton.setBackground(getResources().getDrawable(R.drawable.circle_set));
+                      mBack2Car = new Back2Car(mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue());
+                      Snackbar.make(findViewById(android.R.id.content), "Position set.", Snackbar.LENGTH_LONG).show();
+                      isClicked = true;
+                      isSharedPreferences = true;
+                      return true;
+                  }
               } else {
                   Snackbar.make(findViewById(android.R.id.content), "Bring me Back", Snackbar.LENGTH_LONG).show();
-                return true;
+                  return true;
               }
-          }
-
-          @Override
-          public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-              Snackbar.make(findViewById(android.R.id.content), "Remove.", Snackbar.LENGTH_LONG).show();
-              mButton.setBackground(getResources().getDrawable(R.drawable.circle));
-              if (mBack2Car != null) {
-                  mBack2Car.setLongitude(0.00);
-                  mBack2Car.setLatitude(0.00);
-                  isClicked = false;
-              }
-              return true;
           }
 
           @Override
           public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-              if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE &&
-                      Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                  Snackbar.make(findViewById(android.R.id.content), "Right to Left", Snackbar.LENGTH_LONG).show();
-                  //From Right to Left
-                  return true;
-              }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE &&
+               if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE &&
                       Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                   if (mBack2Car != null){
+
+                      SharedPreferences.Editor editor = sharedpreferences.edit();
+                      editor.putString(STORED_LATITUDE, Double.toString(mBack2Car.getLatitude()));
+                      editor.putString(STORED_LONGITUDE, Double.toString(mBack2Car.getLongitude()));
+                      editor.apply();
+
                       Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-                      intent.putExtra("Latitude", mBack2Car.getLatitude());
-                      intent.putExtra("Longitude", mBack2Car.getLongitude());
+                      intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
+                      intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
                       startActivity(intent);
                       return true;
                   }
                   return true;
               }
-
               return false;
           }
       });

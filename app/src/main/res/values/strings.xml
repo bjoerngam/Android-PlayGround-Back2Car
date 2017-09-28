@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Back2Car</string>
+    <string name="title_activity_back2_car_map">Map</string>
 </resources>

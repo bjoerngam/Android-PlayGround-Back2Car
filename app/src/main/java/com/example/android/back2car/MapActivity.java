@@ -1,62 +1,64 @@
 package com.example.android.back2car;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 
-public class MapActivity extends AppCompatActivity {
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+public class MapActivity extends Activity implements OnMapReadyCallback {
 
 
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-    private double set_longitude;
-    private double set_latitude;
-
     private CurrentPosition mCurrentPosition;
+    private GoogleMap mMap;
+    Button mDistance;
 
-    TextView mDistance;
+    private LatLng currentPosition;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mDistance = (TextView) findViewById(R.id.tvDistance);
-        set_latitude = getIntent().getDoubleExtra("Latitude", 0);
-        set_longitude = getIntent().getDoubleExtra("Longitude" ,0);
+        mDistance = findViewById(R.id.tvDistance);
         mCurrentPosition = new CurrentPosition(this);
         mCurrentPosition.setLocationManager();
 
-        final GestureDetector listenerMap = new GestureDetector(getBaseContext(), new GestureDetector.SimpleOnGestureListener() {
-
+        final GestureDetector listenerMap = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE &&
+                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE &&
                         Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     Snackbar.make(findViewById(android.R.id.content), "Right to Left", Snackbar.LENGTH_LONG).show();
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), Back2CarMap.class);
+                    intent.putExtra("Latitude", mCurrentPosition.getmLatitude());
+                    intent.putExtra("Longitude", mCurrentPosition.getLongitue());
                     startActivity(intent);
                     return true;
                 }
-
                 return false;
             }
         });
 
-
-
-        String tvDistance = Double.toString(calculateDistance(set_latitude, set_longitude,
-                mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue()));
-
+        String tvDistance = Double.toString(calculateDistance(getIntent().getExtras().getDouble("Latitude"),
+                getIntent().getExtras().getDouble("Longitude"),
+                mCurrentPosition.getmLatitude(),
+                mCurrentPosition.getLongitue()));
         mDistance.setText(tvDistance);
-
         mDistance.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -65,6 +67,8 @@ public class MapActivity extends AppCompatActivity {
         });
 
     }
+
+
 
     private double calculateDistance (double openStreetData_latitude, double openStreetData_longitude,
                                     double gpsData_latitude, double gpsData_longitude) {
@@ -76,13 +80,30 @@ public class MapActivity extends AppCompatActivity {
                 * Math.sin(gpsData_latitude/radian_translation) + Math.cos(openStreetData_latitude/radian_translation)
                 * Math.cos(gpsData_latitude/radian_translation)
                 * Math.cos (openStreetData_longitude/radian_translation - gpsData_longitude/radian_translation)) * earth_radius;
-
-        Log.i("Distance", Double.toString(distance));
-        Log.i("Distance:", Double.toString(openStreetData_latitude) + " " + Double.toString(openStreetData_longitude)
-                + " GPS:" + Double.toString(gpsData_latitude) + " " + Double.toString(gpsData_longitude));
         return (distance);
     }
 
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
 
+        // Add a marker in Sydney and move the camera
+        currentPosition = new LatLng(mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue());
+        mMap.addMarker(new MarkerOptions().position(currentPosition).title("You are here"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPosition));
+        setMarker();
+    }
+
+    public void setMarker(){
+        MarkerOptions options = new MarkerOptions();
+        options.position(currentPosition);
+        options.icon(BitmapDescriptorFactory.defaultMarker(
+                BitmapDescriptorFactory.HUE_BLUE));
+        mMap.addMarker(options);
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+    }
 }
