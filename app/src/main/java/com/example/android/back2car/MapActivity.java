@@ -9,14 +9,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends Activity implements OnMapReadyCallback {
+public class MapActivity extends Activity {
 
 
     private static final int SWIPE_MIN_DISTANCE = 120;
@@ -40,13 +36,10 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         final GestureDetector listenerMap = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE &&
+                if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE &&
                         Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     Snackbar.make(findViewById(android.R.id.content), "Right to Left", Snackbar.LENGTH_LONG).show();
-                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    Intent intent = new Intent(getApplicationContext(), Back2CarMap.class);
-                    intent.putExtra("Latitude", mCurrentPosition.getmLatitude());
-                    intent.putExtra("Longitude", mCurrentPosition.getLongitue());
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     return true;
                 }
@@ -68,8 +61,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
     }
 
-
-
     private double calculateDistance (double openStreetData_latitude, double openStreetData_longitude,
                                     double gpsData_latitude, double gpsData_longitude) {
 
@@ -83,27 +74,4 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         return (distance);
     }
 
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        currentPosition = new LatLng(mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue());
-        mMap.addMarker(new MarkerOptions().position(currentPosition).title("You are here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPosition));
-        setMarker();
-    }
-
-    public void setMarker(){
-        MarkerOptions options = new MarkerOptions();
-        options.position(currentPosition);
-        options.icon(BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_BLUE));
-        mMap.addMarker(options);
-
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(true);
-    }
 }

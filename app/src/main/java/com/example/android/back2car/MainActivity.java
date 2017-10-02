@@ -14,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class MainActivity extends Activity {
 
@@ -36,12 +37,30 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String APP_NAME = "Back2Car";
+        ImageView mImageViewSteps;
         checkSecurity();
 
         sharedpreferences = getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
 
         mButton = findViewById(R.id.btSetPosition);
         mButton.setElevation(16);
+        mImageViewSteps = findViewById(R.id.ivSteps);
+
+        mImageViewSteps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mBack2Car != null) {
+                    Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                    intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
+                    intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Currently no position set!", Snackbar.LENGTH_LONG).show();
+                }
+
+            }
+        });
 
         mCurrentPosition = new CurrentPosition(this);
         mCurrentPosition.setLocationManager();
@@ -84,7 +103,7 @@ public class MainActivity extends Activity {
                       editor.putString(STORED_LONGITUDE, Double.toString(mBack2Car.getLongitude()));
                       editor.apply();
 
-                      Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                      Intent intent = new Intent(getApplicationContext(), Back2CarMap.class);
                       intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
                       intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
                       startActivity(intent);
