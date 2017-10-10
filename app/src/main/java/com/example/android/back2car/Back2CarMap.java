@@ -10,6 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -38,6 +39,8 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
     private LatLng startPosition;
     private LatLng currentPosition;
 
+    private String mVehicleNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +51,11 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         startPosition = new LatLng (getIntent().getExtras().getDouble("Latitude"),
                 getIntent().getExtras().getDouble("Longitude"));
 
-        currentPosition = new LatLng (mCurrentPosition.getmLatitude(),mCurrentPosition.getLongitue());
+        mVehicleNumber = getIntent().getStringExtra("Vehicle");
+
+        //currentPosition = new LatLng (mCurrentPosition.getmLatitude(),mCurrentPosition.getLongitue());
+
+        currentPosition = new LatLng(50.954481, 6.921005);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -80,11 +87,10 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(startPosition)
-                .build();
+        UiSettings mMapUiSettings = mMap.getUiSettings();
 
         mMap.addMarker(new MarkerOptions()
                 .position(startPosition)
@@ -95,7 +101,17 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
                 .position(currentPosition)
                 .title("End point"));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(startPosition)
+                .include(currentPosition)
+                .build();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 400, 400, 10));
+
+        mMapUiSettings.setZoomControlsEnabled(true);
+        mMapUiSettings.setScrollGesturesEnabled(true);
+
+
     }
 
     private String getDirectionsUrl(LatLng origin,LatLng dest){
@@ -110,15 +126,18 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         // Sensor enabled
         String sensor = "sensor=false";
 
+        // Mode
+        String mode = mVehicleNumber;
+
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+        String parameters = str_origin+"&"+str_dest+"&"+sensor+"&"+mode;
 
         // Output format
         String output = "json";
 
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-
+        Log.i("URL:" , url);
         return url;
     }
 
@@ -223,7 +242,6 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
             for(int i=0;i<result.size();i++){
@@ -246,14 +264,14 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(2);
+                lineOptions.width(10);
                 lineOptions.color(Color.RED);
 
             }
-
             // Drawing polyline in the Google Map for the i-th route
-            mMap.addPolyline(lineOptions);
+            if (lineOptions != null) {
+                mMap.addPolyline(lineOptions);
+            }
         }
     }
-
 }

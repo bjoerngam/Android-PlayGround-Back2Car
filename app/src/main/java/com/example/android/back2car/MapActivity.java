@@ -9,25 +9,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-
 public class MapActivity extends Activity {
 
 
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-    private CurrentPosition mCurrentPosition;
-    private GoogleMap mMap;
-    Button mDistance;
-
-    private LatLng currentPosition;
-
+    private Button mDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CurrentPosition mCurrentPosition;
         setContentView(R.layout.activity_map);
         mDistance = findViewById(R.id.tvDistance);
         mCurrentPosition = new CurrentPosition(this);
@@ -61,7 +54,7 @@ public class MapActivity extends Activity {
 
     }
 
-    private double calculateDistance (double openStreetData_latitude, double openStreetData_longitude,
+    public double calculateDistance (double openStreetData_latitude, double openStreetData_longitude,
                                     double gpsData_latitude, double gpsData_longitude) {
 
         final int earth_radius = 6371;

@@ -2,13 +2,13 @@
 <RelativeLayout
     android:id="@+id/rlActivityMain"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.back2car.MainActivity">
 
     <Button
+        android:contentDescription="@string/set_button"
         android:id="@+id/btSetPosition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,12 +18,13 @@
 
     <ImageView
         android:id="@+id/ivSteps"
+        android:contentDescription="@string/info_icon_content_description"
         android:layout_alignParentBottom="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="18dp"
-        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="@dimen/default_padding_space"
+        android:layout_marginEnd="@dimen/default_padding_space"
         android:src="@drawable/ic_info_outline_black_24dp"/>
 
 </RelativeLayout>

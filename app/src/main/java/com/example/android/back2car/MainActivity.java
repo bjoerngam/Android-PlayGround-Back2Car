@@ -2,6 +2,7 @@ package com.example.android.back2car;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +11,9 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +34,14 @@ public class MainActivity extends Activity {
     private boolean isSharedPreferences = false;
     private final String STORED_LATITUDE = "Latitude";
     private final String STORED_LONGITUDE = "Longitude";
+    private final String STORED_VEHICLE = "Vehicle";
+
+    private String vehicle_number;
+
+    private final String MODE_CAR = "mode=driving";
+    private final String MODE_WALK = "mode=walking";
+    private final String MODE_BICYCLING = "mode=bicycling";
+    private final String MODE_TRAIN = "mode=transit";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,7 @@ public class MainActivity extends Activity {
                     Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                     intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
                     intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
+                    intent.putExtra(STORED_VEHICLE, vehicle_number);
                     startActivity(intent);
                 } else {
                     Snackbar.make(findViewById(android.R.id.content),
@@ -61,9 +73,10 @@ public class MainActivity extends Activity {
 
             }
         });
-
         mCurrentPosition = new CurrentPosition(this);
-        mCurrentPosition.setLocationManager();
+        if(hasSecurity()) {
+            mCurrentPosition.setLocationManager();
+        }
 
       final GestureDetector listener = new GestureDetector(getBaseContext(), new GestureDetector.SimpleOnGestureListener() {
 
@@ -88,6 +101,7 @@ public class MainActivity extends Activity {
                   }
               } else {
                   Snackbar.make(findViewById(android.R.id.content), "Bring me Back", Snackbar.LENGTH_LONG).show();
+                  getVehicleDialogBox();
                   return true;
               }
           }
@@ -126,13 +140,19 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        mCurrentPosition.locationManagerPause();
+        if (hasSecurity()) {
+            mCurrentPosition.setLocationManager();
+            mCurrentPosition.locationManagerPause();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mCurrentPosition.locationManagerResume();
+        if(hasSecurity()) {
+            mCurrentPosition.setLocationManager();
+            mCurrentPosition.locationManagerResume();
+        }
     }
 
     public void checkSecurity(){
@@ -143,6 +163,61 @@ public class MainActivity extends Activity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION },
                     REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
         }
+    }
+
+    public boolean hasSecurity(){
+        return (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED);
+    }
+
+    public void getVehicleDialogBox() {
+
+        final AlertDialog.Builder vehicleDialog =
+                new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View f = factory.inflate(R.layout.dialogbox_vehicle, null);
+
+        vehicleDialog.setView(f);
+        vehicleDialog.setTitle("Select your vehicle");
+
+        ImageView mIconCar = f.findViewById(R.id.iVCar);
+        ImageView mIconTrain = f.findViewById(R.id.iVTrain);
+        ImageView mIconBike = f.findViewById(R.id.ivBike);
+        ImageView mIconWalk = f.findViewById(R.id.ivWalk);
+
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()){
+                    case R.id.iVCar:
+                        vehicle_number = MODE_CAR;
+                        Log.i("Click", "Car");
+                        break;
+                    case R.id.ivBike:
+                        vehicle_number = MODE_BICYCLING;
+                        Log.i("Click", "Bike");
+                        break;
+
+                    case R.id.ivWalk:
+                        vehicle_number = MODE_WALK;
+                        Log.i("Click", "Walk");
+                        break;
+                    case R.id.iVTrain:
+                        vehicle_number = MODE_TRAIN;
+                        Log.i("Click", "Train");
+                        break;
+                }
+
+            }
+        };
+
+        mIconCar.setOnClickListener(onClickListener);
+        mIconBike.setOnClickListener(onClickListener);
+        mIconTrain.setOnClickListener(onClickListener);
+        mIconWalk.setOnClickListener(onClickListener);
+
+        vehicleDialog.show();
+
     }
 
 }

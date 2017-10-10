@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Back2Car</string>
     <string name="title_activity_back2_car_map">Map</string>
+
+    <!-- Main Screen -->
+    <string name="info_icon_content_description">Shows you the distance</string>
+    <string name="set_button">Sets the current position and the end position</string>
 </resources>
