@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import org.junit.Test;
 

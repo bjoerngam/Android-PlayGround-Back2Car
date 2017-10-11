@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import android.Manifest;
 import android.app.Activity;
@@ -11,13 +11,15 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 
@@ -29,6 +31,7 @@ public class MainActivity extends Activity {
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
     private Button mButton;
+    private RelativeLayout helpRelativeLayout;
 
     private SharedPreferences sharedpreferences;
     private boolean isSharedPreferences = false;
@@ -57,18 +60,25 @@ public class MainActivity extends Activity {
         mButton.setElevation(16);
         mImageViewSteps = findViewById(R.id.ivSteps);
 
+        helpRelativeLayout = findViewById(R.id.rlHelp);
+
+        if (isFirstTime()) {
+            helpRelativeLayout.setVisibility(View.INVISIBLE);
+        }
+
         mImageViewSteps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mBack2Car != null) {
-                    Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), DistanceActivity.class);
                     intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
                     intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
                     intent.putExtra(STORED_VEHICLE, vehicle_number);
                     startActivity(intent);
                 } else {
                     Snackbar.make(findViewById(android.R.id.content),
-                            "Currently no position set!", Snackbar.LENGTH_LONG).show();
+                            getString(R.string.snackbar_error),
+                            Snackbar.LENGTH_LONG).show();
                 }
 
             }
@@ -86,21 +96,24 @@ public class MainActivity extends Activity {
                   if (isSharedPreferences) {
                       String latitude = sharedpreferences.getString(STORED_LATITUDE, null);
                       String longitude = sharedpreferences.getString(STORED_LONGITUDE, null);
-                      Snackbar.make(findViewById(android.R.id.content), "Found settings", Snackbar.LENGTH_LONG).show();
+                      Snackbar.make(findViewById(android.R.id.content), getString(R.string.shared_preferences_found)
+                              , Snackbar.LENGTH_LONG).show();
                       mButton.setBackground(getResources().getDrawable(R.drawable.circle_set));
                       mBack2Car = new Back2Car(Double.valueOf(latitude), Double.valueOf(longitude));
                       isClicked = true;
                       return true;
                   }else {
                       mButton.setBackground(getResources().getDrawable(R.drawable.circle_set));
-                      mBack2Car = new Back2Car(mCurrentPosition.getmLatitude(), mCurrentPosition.getLongitue());
-                      Snackbar.make(findViewById(android.R.id.content), "Position set.", Snackbar.LENGTH_LONG).show();
+                      mBack2Car = new Back2Car(mCurrentPosition.getLatitude(), mCurrentPosition.getLongitude());
+                      Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_position_set),
+                              Snackbar.LENGTH_LONG).show();
                       isClicked = true;
                       isSharedPreferences = true;
                       return true;
                   }
               } else {
-                  Snackbar.make(findViewById(android.R.id.content), "Bring me Back", Snackbar.LENGTH_LONG).show();
+                  Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_back_to_start)
+                          , Snackbar.LENGTH_LONG).show();
                   getVehicleDialogBox();
                   return true;
               }
@@ -120,6 +133,7 @@ public class MainActivity extends Activity {
                       Intent intent = new Intent(getApplicationContext(), Back2CarMap.class);
                       intent.putExtra(STORED_LATITUDE, mBack2Car.getLatitude());
                       intent.putExtra(STORED_LONGITUDE, mBack2Car.getLongitude());
+                      intent.putExtra(STORED_VEHICLE, vehicle_number);
                       startActivity(intent);
                       return true;
                   }
@@ -175,48 +189,77 @@ public class MainActivity extends Activity {
         final AlertDialog.Builder vehicleDialog =
                 new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog);
         LayoutInflater factory = LayoutInflater.from(this);
-        final View f = factory.inflate(R.layout.dialogbox_vehicle, null);
+        final ViewGroup nullParent = null;
+        final View f = factory.inflate(R.layout.dialogbox_vehicle, nullParent);
 
         vehicleDialog.setView(f);
-        vehicleDialog.setTitle("Select your vehicle");
+        vehicleDialog.setTitle(getString(R.string.dialogbox_vehicle));
 
-        ImageView mIconCar = f.findViewById(R.id.iVCar);
-        ImageView mIconTrain = f.findViewById(R.id.iVTrain);
-        ImageView mIconBike = f.findViewById(R.id.ivBike);
-        ImageView mIconWalk = f.findViewById(R.id.ivWalk);
+        RadioButton mRadioButtonCar = f.findViewById(R.id.rdCar);
+        RadioButton mRadioButtonTransit = f.findViewById(R.id.rdTransit);
+        RadioButton mRadioButtonBike = f.findViewById(R.id.rdBike);
+        RadioButton mRadioButtonWalk = f.findViewById(R.id.rdWalk);
+
+        final AlertDialog dialog = vehicleDialog.show();
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (view.getId()){
-                    case R.id.iVCar:
+                    case R.id.rdCar:
                         vehicle_number = MODE_CAR;
-                        Log.i("Click", "Car");
+                        dialog.dismiss();
                         break;
-                    case R.id.ivBike:
+                    case R.id.rdBike:
                         vehicle_number = MODE_BICYCLING;
-                        Log.i("Click", "Bike");
+                        dialog.dismiss();
                         break;
 
-                    case R.id.ivWalk:
+                    case R.id.rdWalk:
                         vehicle_number = MODE_WALK;
-                        Log.i("Click", "Walk");
+                        dialog.dismiss();
                         break;
-                    case R.id.iVTrain:
+                    case R.id.rdTransit:
                         vehicle_number = MODE_TRAIN;
-                        Log.i("Click", "Train");
+                        dialog.dismiss();
                         break;
                 }
 
             }
         };
 
-        mIconCar.setOnClickListener(onClickListener);
-        mIconBike.setOnClickListener(onClickListener);
-        mIconTrain.setOnClickListener(onClickListener);
-        mIconWalk.setOnClickListener(onClickListener);
+        mRadioButtonBike.setOnClickListener(onClickListener);
+        mRadioButtonCar.setOnClickListener(onClickListener);
+        mRadioButtonWalk.setOnClickListener(onClickListener);
+        mRadioButtonTransit.setOnClickListener(onClickListener);
 
-        vehicleDialog.show();
+        dialog.show();
+    }
+
+    public boolean isFirstTime(){
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBefore", false);
+
+        if (!ranBefore) {
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBefore", true);
+            editor.apply();
+            helpRelativeLayout.setVisibility(View.VISIBLE);
+            helpRelativeLayout.setOnTouchListener(new View.OnTouchListener(){
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    helpRelativeLayout.setVisibility(View.INVISIBLE);
+                    return false;
+                }
+
+            });
+
+
+        }
+        return ranBefore;
 
     }
 

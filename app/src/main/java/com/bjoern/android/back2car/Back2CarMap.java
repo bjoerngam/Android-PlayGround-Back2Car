@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -29,13 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.example.android.back2car.R.id.map;
+import static com.bjoern.android.back2car.R.id.map;
 
 public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
-    private CurrentPosition mCurrentPosition;
     private LatLng startPosition;
     private LatLng currentPosition;
 
@@ -45,6 +44,7 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_back2_car_map);
+        CurrentPosition mCurrentPosition;
         mCurrentPosition = new CurrentPosition(this);
         mCurrentPosition.setLocationManager();
 
@@ -53,9 +53,9 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
 
         mVehicleNumber = getIntent().getStringExtra("Vehicle");
 
-        //currentPosition = new LatLng (mCurrentPosition.getmLatitude(),mCurrentPosition.getLongitue());
+        currentPosition = new LatLng (mCurrentPosition.getLatitude(),mCurrentPosition.getLongitude());
 
-        currentPosition = new LatLng(50.954481, 6.921005);
+        //currentPosition = new LatLng(50.954481, 6.921005);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -95,11 +95,11 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         mMap.addMarker(new MarkerOptions()
                 .position(startPosition)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.car))
-                .title("Starting point"));
+                .title(getString(R.string.start_point)));
 
         mMap.addMarker(new MarkerOptions()
                 .position(currentPosition)
-                .title("End point"));
+                .title(getString(R.string.end_point)));
 
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(startPosition)
@@ -136,9 +136,7 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
-        Log.i("URL:" , url);
-        return url;
+        return "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
     }
 
     /** A method to download json data from url */
@@ -160,9 +158,9 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
 
             BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
 
-            StringBuffer sb  = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
-            String line = "";
+            String line;
             while( ( line = br.readLine())  != null){
                 sb.append(line);
             }
@@ -174,8 +172,8 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         }catch(Exception e){
             Log.d("Exception", e.toString());
         }finally{
-            iStream.close();
-            urlConnection.disconnect();
+                iStream.close();
+                urlConnection.disconnect();
         }
         return data;
     }
@@ -195,7 +193,7 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
             }catch(Exception e){
-                Log.d("Background Task",e.toString());
+                e.printStackTrace();
             }
             return data;
         }
@@ -240,7 +238,7 @@ public class Back2CarMap extends FragmentActivity implements OnMapReadyCallback 
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
+            ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
 
             // Traversing through all the routes

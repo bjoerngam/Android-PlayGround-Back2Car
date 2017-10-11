@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,7 +11,7 @@ import android.os.Parcelable;
  * <p>
  * Description:
  */
-public class Back2Car implements Parcelable{
+class Back2Car implements Parcelable{
 
     private double mLatitude;
     private double mLongitude;
@@ -34,11 +34,11 @@ public class Back2Car implements Parcelable{
     };
 
 
-    void setLatitude(double mLatitude){ this.mLatitude = mLatitude; }
-    void setLongitude (double mLongitude) {this.mLongitude = mLongitude;}
+    private void setLatitude(double mLatitude){ this.mLatitude = mLatitude; }
+    private void setLongitude (double mLongitude) {this.mLongitude = mLongitude;}
 
-    public double getLatitude(){return mLatitude;}
-    public double getLongitude() {return mLongitude;}
+    double getLatitude(){return mLatitude;}
+    double getLongitude() {return mLongitude;}
 
     private Back2Car(Parcel in) {
         mLatitude = in.readDouble();

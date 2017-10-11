@@ -5,4 +5,16 @@
     <!-- Main Screen -->
     <string name="info_icon_content_description">Shows you the distance</string>
     <string name="set_button">Sets the current position and the end position</string>
+    <string name="dialogbox_vehicle">Select your vehicle</string>
+    <string name="snackbar_back_to_start">Bring me back</string>
+    <string name="snackbar_position_set">Position is set</string>
+    <string name="snackbar_error">Currently no position set!</string>
+    <string name="shared_preferences_found">Found settings</string>
+
+    <!--Back2CarMap Screen -->
+    <string name="end_point">Current position</string>
+    <string name="start_point">Start position</string>
+
+    <!--Distance Screen -->
+    <string name="distance_label">Distance</string>
 </resources>

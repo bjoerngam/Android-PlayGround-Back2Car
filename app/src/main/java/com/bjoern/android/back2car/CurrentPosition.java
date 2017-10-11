@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,7 @@ import android.os.Bundle;
  * <p>
  * Description:
  */
-public class CurrentPosition implements LocationListener {
+class CurrentPosition implements LocationListener {
 
 
     private LocationManager mLocationManager;
@@ -29,7 +29,7 @@ public class CurrentPosition implements LocationListener {
         mLocationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
     }
 
-    public void setLocationManager(){
+    void setLocationManager(){
         Location location = null;
         Criteria criteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(criteria, false);
@@ -52,8 +52,8 @@ public class CurrentPosition implements LocationListener {
     private void setLongitude (double mLongitude) { this.mLongitude = mLongitude;}
     private void setLatitude (double mLatitude) { this.mLatitude = mLatitude;}
 
-    public double getLongitue() {return mLongitude;}
-    public double getmLatitude() {return mLatitude;}
+    double getLongitude() {return mLongitude;}
+    double getLatitude() {return mLatitude;}
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
@@ -65,11 +65,11 @@ public class CurrentPosition implements LocationListener {
 
     }
 
-    public void locationManagerPause(){
+    void locationManagerPause(){
         mLocationManager.removeUpdates(this);
     }
 
-    public void locationManagerResume(){
+    void locationManagerResume(){
         try{
             mLocationManager.requestLocationUpdates(mProvider, 400, 1, this);
         }catch (SecurityException exception){

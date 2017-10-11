@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:632527898307:android:d3c5c3a0bea6d5c5",
+        "mobilesdk_app_id": "1:632527898307:android:01c353b1b1a604d0",
         "android_client_info": {
-          "package_name": "com.example.android.back2car"
+          "package_name": "com.bjoern.android.back2car"
         }
       },
       "oauth_client": [

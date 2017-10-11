@@ -1,4 +1,4 @@
-package com.example.android.back2car;
+package com.bjoern.android.back2car;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

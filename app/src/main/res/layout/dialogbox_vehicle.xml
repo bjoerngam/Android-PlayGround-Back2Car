@@ -6,102 +6,37 @@
     android:layout_height="200dp">
 
 
-    <TextView
+    <RadioGroup
+        android:id="@+id/rgVehicle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/default_padding_space"
-        android:layout_centerHorizontal="true"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:text="You want return via..."/>
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iVCar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="50dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:contentDescription="Car Icon"
-        android:src="@drawable/ic_directions_car_black_24dp"/>
+        <RadioButton
+            android:id="@+id/rdCar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Car"/>
 
-    <TextView
-        android:id="@+id/tvCar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="50dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:layout_toEndOf="@id/iVCar"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:text="Car"/>
-
-    <ImageView
-        android:id="@+id/iVTrain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="80dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:contentDescription="Train icon"
-        android:src="@drawable/ic_directions_transit_black_24dp"/>
-
-    <TextView
-        android:id="@+id/tvTrain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="82dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:layout_toEndOf="@id/iVTrain"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:contentDescription="Walk Icon"
-        android:text="Train"/>
+        <RadioButton
+            android:id="@+id/rdTransit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transit"/>
 
 
-    <ImageView
-        android:id="@+id/ivBike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="110dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:src="@drawable/ic_directions_bike_black_24dp"/>
+        <RadioButton
+            android:id="@+id/rdBike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bike"/>
 
-    <TextView
-        android:id="@+id/tvBike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="112dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:layout_toEndOf="@id/iVTrain"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:text="Bike"/>
+        <RadioButton
+            android:id="@+id/rdWalk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Walk"/>
 
-    <ImageView
-        android:id="@+id/ivWalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="140dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:src="@drawable/ic_directions_walk_black_24dp"/>
-
-    <TextView
-        android:id="@+id/tvWalk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="142dp"
-        android:paddingStart="@dimen/default_padding_space"
-        android:paddingEnd="@dimen/default_padding_space"
-        android:layout_toEndOf="@id/iVTrain"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"
-        android:text="Walk"/>
+    </RadioGroup>
 
 
 
